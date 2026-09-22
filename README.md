@@ -1,4 +1,4 @@
-# Kunstig intelligens for utviklere
+# Kunstig intelligens for utviklere i Domsolen
 Jeg har gått gjennom standard løype for å bli kjent med ki-assistert utvikling;
 
 1. Starter med chatting.
@@ -25,7 +25,7 @@ Få en rask innføring i hva som er mulig og hvordan du gjør det.
 Del erfaringer med andre, snakk med likesinnede, hjelp andre som er ny.
 
 ### Ikke-utvikler som lurer på hva det handler om
-Følg anvisningene og erfar hvordan utvikling kan gjøres med vanlig norsk, uten detaljert kjennskap til programmeringsspråk.
+Følg anvisningene og opplev hvordan utvikling kan gjøres med vanlig norsk, uten detaljert kjennskap til programmeringsspråk.
 
 ## Innhold
 
