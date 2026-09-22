@@ -9,6 +9,17 @@
 
 Dersom ikke OK, ta kontakt med [Nils Andreas på #ki-for-utviklere for å aktivere lisens](https://domstoladm.slack.com/archives/C09J322CV7H).
 
+### Oppgave: Fork og klon dette repoet
+1. Gå til https://github.com/arve0-domstol/ki
+2. Trykk på _Fork_
+3. Lagre til din egen bruker
+4. Klon repoet til din egen maskin
+
+```shell
+export brukernavn=$(gh auth status --json hosts --jq '.hosts."github.com".[].login')
+mkdir -p ~/domstolene
+git clone https://github.com/$brukernavn$/ki ~/domstolene/ki
+```
 
 ### Oppgave: Sjekk at det virker
 1. Åpne chat-vinduet, om det ikke er åpent (Ctrl + Alt/Cmd + I)
