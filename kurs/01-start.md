@@ -1,5 +1,12 @@
 # Start
 
+## Programvare
+For å gjennomføre kurset, sørg for at du har:
+
+1. Git: https://git-scm.com
+2. Visual Studio Code: https://code.visualstudio.com
+3. Github kommandolinjeverktøy `gh`: https://cli.github.com
+
 ## Test at Copilot-chaten fungerer
 ### Du har Copilot-lisens?
 1. Gå til https://github.com/settings/copilot/features
@@ -20,6 +27,8 @@ export brukernavn=$(gh auth status --json hosts --jq '.hosts."github.com".[].log
 mkdir -p ~/domstolene
 git clone https://github.com/$brukernavn$/ki ~/domstolene/ki
 ```
+
+Tips: På Windows? Bruk _Git Bash_ til å kjøre kommandoene.
 
 ### Oppgave: Sjekk at det virker
 1. Åpne chat-vinduet, om det ikke er åpent (Ctrl + Alt/Cmd + I)
