@@ -61,9 +61,12 @@ git push
 ## Oppgave: Start implementasjon av planen
 Nå skal vi la agenten implementere planen. Når vi implementerer en plan, starter vi alltid med en fersk sesjon. Dette er fordi planleggingen har lest mange filer som har fyllt konteksten, innhold som agenten ikke trenger å vite om nå.
 
-1. I OpenCode, start en ny sesjon: `/clear`
-2. Be agenten om å implementere planen.
+I tillegg skal vi benytte en mer avansert model for å holde styr på implementasjonen, _GPT-6 Sol_, som igjen kaller rimeligere subagenter for å implementere.
 
-> @innlogging-testbrukere.md implementer funksjonaliteten som er beskrevet
+1. I OpenCode, start en ny sesjon med `/clear`
+2. Velg modellen _GPT-6 Sol_ med `/models`
+3. Be agenten om å implementere planen med subagenter:
+
+> @innlogging-testbrukere.md implementer funksjonaliteten som er beskrevet. bruk subagenter for å implementere, gjerne med gpt-6 luna eller rimelige modeller. Sjekk arbeidet til subagenten, gi eventuelt tilbakemelding dersom det ikke er godt nok. Ikke avslutt før ende-til-ende testene kjører og verifiserer en vellykket innlogging.
 
 Neste steg er [08-veien-videre.md](08-veien-videre.md).
