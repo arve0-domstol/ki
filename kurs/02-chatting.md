@@ -65,18 +65,18 @@ Tips: Vet du ikke hva [git worktree](https://git-scm.com/docs/git-worktree) er? 
 ## Oppgave: Bli kjent med kodebasen
 Start en ny chat og prøv disse instruksene:
 
-> I mappen products/testpersoner ligger det et program. Forklar meg hva det gjør, hvilken teknologi det bruker og hvordan jeg kommer i gang.
+> I mappen products/lovisa-web ligger det et program. Forklar meg hva det gjør, hvilken teknologi det bruker og hvordan jeg kommer i gang.
 
 ## Oppgave: Bli kjent med teknologien
 Var det noe nytt her som du ikke kjenner til? Fortsett i samme chat og spør om teknologiene som er i bruk:
 
-> Kan du forklare meg mer om teknologiene Entra, Maskinporten og Vault?
+> Kan du forklare meg mer om teknologiene Tailwind og Drizzle?
 
 ## Oppgave: Lagre resultatet
-Høyreklikk, velg _Copy all_, lagre til testpersoner.md, commit og push:
+Høyreklikk, velg _Copy all_, lagre til lovisa-web.md, commit og push:
 
 ```shell
-git add testpersoner.md
+git add **/lovisa-web.md
 git commit -m "utforske en kodebase og dens teknologier"
 git push
 ```
