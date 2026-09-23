@@ -2,8 +2,6 @@
 set -e
 
 SCOREBOARD_DIR="$(cd "$(dirname "$0")" && pwd)"
-PLAYWRIGHT_DIR="$SCOREBOARD_DIR/../tidtaker"
-
 # Kill any running server
 pkill -f "node server.js" 2>/dev/null || true
 sleep 1

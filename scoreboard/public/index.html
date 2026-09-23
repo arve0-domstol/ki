@@ -196,7 +196,7 @@
   </style>
 </head>
 <body>
-  <h1>🎮 github.com/arve0/ki 🎮</h1>
+  <h1>🎮 github.com/domstolene/lovisa_core 🎮</h1>
   <div id="board"></div>
   <div id="excluded-panel"></div>
   <div id="status">
@@ -252,7 +252,8 @@
       excludeBtn.addEventListener('click', e => { e.preventDefault(); excludeUser(p.login); });
       card.appendChild(excludeBtn);
 
-      const repoUrl = `https://github.com/${p.login}/ki`;
+      const branchName = p.branchName || `ki-${p.login}`;
+      const repoUrl = `https://github.com/domstolene/lovisa_core/tree/${encodeURIComponent(branchName)}`;
 
       const avatarLink = document.createElement('a');
       avatarLink.href = repoUrl;
@@ -354,7 +355,7 @@
       es.addEventListener('fork', e => {
         const { login, avatarUrl } = JSON.parse(e.data);
         if (!participants[login]) {
-          participants[login] = { login, avatarUrl, completedModules: [], lastChecked: new Date().toISOString() };
+          participants[login] = { login, avatarUrl, branchName: `ki-${login}`, completedModules: [], lastChecked: new Date().toISOString() };
           updateCard(participants[login]);
         }
         try { playNewFork(); } catch {}

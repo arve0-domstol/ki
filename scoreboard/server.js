@@ -3,13 +3,15 @@
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
-const { execSync } = require('node:child_process');
+const { execFileSync, execSync } = require('node:child_process');
 
 // ── Configuration ────────────────────────────────────────────────────────────
 
-const PORT = 3000;
+const PORT = 4000;
 const POLL_INTERVAL_MS = 10_000;
-const REPO = 'arve0/ki';
+const SOURCE_REPO = 'domstolene/lovisa_core';
+const SOURCE_REMOTE = 'scoreboard_lovisa_core';
+const SOURCE_BASE_BRANCH = 'ki';
 const EXCLUDED_USERS = ['arve0'];
 const MAX_MODULE = process.env.MAX_MODULE ? Number(process.env.MAX_MODULE) : 7;
 
@@ -18,7 +20,7 @@ const worktreesDir = path.join(__dirname, 'worktrees');
 
 // ── State ────────────────────────────────────────────────────────────────────
 
-/** @type {{ participants: Record<string, { login: string, avatarUrl: string, repoName: string, completedModules: number[], lastChecked: string }> }} */
+/** @type {{ participants: Record<string, { login: string, avatarUrl: string, branchName: string, completedModules: number[], lastChecked: string }> }} */
 const state = { participants: {} };
 
 /** Runtime-excluded logins (in addition to EXCLUDED_USERS). Persists in memory only. */
@@ -42,48 +44,53 @@ function broadcast(event, data) {
 // ── Git helpers ──────────────────────────────────────────────────────────────
 
 function git(args, opts = {}) {
-  return execSync(`git ${args}`, { cwd: repoRoot, encoding: 'utf8', ...opts }).trim();
+  return execFileSync('git', args, { cwd: repoRoot, encoding: 'utf8', ...opts }).trim();
 }
 
 function gitInWorktree(login, args) {
   const wtDir = path.join(worktreesDir, login);
-  return execSync(`git ${args}`, { cwd: wtDir, encoding: 'utf8' }).trim();
+  return execFileSync('git', args, { cwd: wtDir, encoding: 'utf8' }).trim();
 }
 
-function hasRemote(login) {
+function ensureSourceRemote() {
   try {
-    git(`remote get-url ${login}`);
-    return true;
+    git(['remote', 'get-url', SOURCE_REMOTE]);
   } catch {
-    return false;
+    git(['remote', 'add', SOURCE_REMOTE, `https://github.com/${SOURCE_REPO}.git`]);
+    return;
   }
+  git(['remote', 'set-url', SOURCE_REMOTE, `https://github.com/${SOURCE_REPO}.git`]);
 }
 
-function setRemoteUrl(login, repoName) {
-  const url = `https://github.com/${login}/${repoName}.git`;
-  if (hasRemote(login)) {
-    git(`remote set-url ${login} ${url}`);
-  } else {
-    git(`remote add ${login} ${url}`);
-  }
+function branchNameFor(login) {
+  return `ki-${login}`;
 }
 
-function initWorktree(login, repoName = 'ki') {
+function fetchParticipantBranches(login) {
+  const participantBranch = branchNameFor(login);
+  git([
+    'fetch', '--depth=50', SOURCE_REMOTE,
+    `+refs/heads/${SOURCE_BASE_BRANCH}:refs/remotes/${SOURCE_REMOTE}/${SOURCE_BASE_BRANCH}`,
+    `+refs/heads/${participantBranch}:refs/remotes/${SOURCE_REMOTE}/${participantBranch}`,
+  ]);
+}
+
+function initWorktree(login) {
   const wtDir = path.join(worktreesDir, login);
-  setRemoteUrl(login, repoName);
+  ensureSourceRemote();
+  fetchParticipantBranches(login);
   if (!fs.existsSync(wtDir)) {
-    git(`fetch ${login} --depth=50`);
-    git(`worktree add scoreboard/worktrees/${login} ${login}/main`);
+    git(['worktree', 'add', '--detach', `scoreboard/worktrees/${login}`, `refs/remotes/${SOURCE_REMOTE}/${branchNameFor(login)}`]);
     console.log(`[init] worktree created for ${login}`);
   } else {
-    syncWorktree(login, repoName);
+    syncWorktree(login);
   }
 }
 
-function syncWorktree(login, repoName) {
-  if (repoName) setRemoteUrl(login, repoName);
-  git(`fetch ${login} --depth=50`);
-  gitInWorktree(login, `reset --hard ${login}/main`);
+function syncWorktree(login) {
+  ensureSourceRemote();
+  fetchParticipantBranches(login);
+  gitInWorktree(login, ['reset', '--hard', `refs/remotes/${SOURCE_REMOTE}/${branchNameFor(login)}`]);
 }
 
 // ── Module detection ─────────────────────────────────────────────────────────
@@ -96,17 +103,24 @@ function fileExists(login, relPath) {
   return fs.existsSync(wtPath(login, relPath));
 }
 
-function fileContains(login, relPath, keyword) {
-  const p = wtPath(login, relPath);
-  if (!fs.existsSync(p)) return false;
-  return fs.readFileSync(p, 'utf8').toLowerCase().includes(keyword.toLowerCase());
+function hasLogFile(login) {
+  try {
+    return fs.readdirSync(wtPath(login, '.')).some(name => /^feil-.+-.+\.txt$/i.test(name));
+  } catch {
+    return false;
+  }
 }
 
 function commitMessageContains(login, filePath, keywords) {
   try {
     const log = git(
-      `log --oneline -20 ${login}/main ^origin/main -- ${filePath}`,
-      { cwd: repoRoot }
+      [
+        'log', '--oneline', '-20',
+        `refs/remotes/${SOURCE_REMOTE}/${branchNameFor(login)}`,
+        `^refs/remotes/${SOURCE_REMOTE}/${SOURCE_BASE_BRANCH}`,
+        '--', filePath,
+      ],
+      { cwd: repoRoot },
     ).toLowerCase();
     return keywords.some(k => log.includes(k.toLowerCase()));
   } catch {
@@ -129,52 +143,53 @@ function detectCompletedModules(login) {
     completed.push(1);
   }
 
-  // Module 02 – tidtaker.md exists OR commit message
+  // Module 02 – lovisa-web.md exists OR commit message
   if (MAX_MODULE >= 2 && (
-    fileExists(login, 'tidtaker.md') ||
-    commitMessageContains(login, 'tidtaker.md', ['utforske', 'kodebase', 'teknologi'])
+    fileExists(login, 'products/lovisa-web/lovisa-web.md') ||
+    fileExists(login, 'lovisa-web.md') ||
+    commitMessageContains(login, ':(glob)**/lovisa-web.md', ['utforske', 'kodebase', 'teknologi'])
   )) {
     completed.push(2);
   }
 
-  // Module 03 – tidtaker/templating.md exists OR commit message
+  // Module 03 – drizzle.md exists OR commit message
   if (MAX_MODULE >= 3 && (
-    fileExists(login, 'tidtaker/templating.md') ||
-    commitMessageContains(login, 'tidtaker/templating.md', ['kontekst', 'templating'])
+    fileExists(login, 'products/lovisa-web/drizzle.md') ||
+    fileExists(login, 'drizzle.md') ||
+    commitMessageContains(login, ':(glob)**/drizzle.md', ['kontekst', 'drizzle'])
   )) {
     completed.push(3);
   }
 
-  // Module 04 – AGENTS.md exists OR commit message on tidtaker/ about date format
+  // Module 04 – testpersoner instructions or implementation commit
   if (MAX_MODULE >= 4 && (
-    fileExists(login, 'AGENTS.md') ||
-    commitMessageContains(login, 'tidtaker/', ['dato', 'format', 'norsk', 'april', 'juni'])
+    fileExists(login, 'products/testpersoner/AGENTS.md') ||
+    commitMessageContains(login, 'products/testpersoner/', ['tilfeldig', 'tilfeldig person', 'random'])
   )) {
     completed.push(4);
   }
 
-  // Module 05 – commit message on tidtaker/ about timer bug
-  if (MAX_MODULE >= 5 && commitMessageContains(login, 'tidtaker/', [
-    'teller', 'timer', 'feil', 'fiks', 'live', 'htmx', 'oppdater', 'bug', 'tick', 'count',
-  ])) {
+  // Module 05 – saved production log analysis
+  if (MAX_MODULE >= 5 && (
+    hasLogFile(login) ||
+    commitMessageContains(login, '.', ['analyserer rene logger', 'stack traces', 'logganalyse'])
+  )) {
     completed.push(5);
   }
 
-  // Module 06 – .agents/skills/grill-me/SKILL.md OR commit message OR eksport.md
+  // Module 06 – grill-me skill or login-help implementation plan
   if (MAX_MODULE >= 6 && (
     fileExists(login, '.agents/skills/grill-me/SKILL.md') ||
     commitMessageContains(login, '.', ['grill', 'skill']) ||
-    fileExists(login, 'eksport.md') ||
-    fileExists(login, 'tidtaker/eksport.md')
+    fileExists(login, 'innlogging-testbrukere.md') ||
+    fileExists(login, 'products/lovisa-web/innlogging-testbrukere.md')
   )) {
     completed.push(6);
   }
 
-  // Module 07 – tidtaker/eksport.md contains "playwright" OR commit message
+  // Module 07 – the explicit commit follows the Playwright login-test update
   if (MAX_MODULE >= 7 && (
-    fileContains(login, 'tidtaker/eksport.md', 'playwright') ||
-    (commitMessageContains(login, 'tidtaker/eksport.md', ['eksport']) &&
-      commitMessageContains(login, 'tidtaker/eksport.md', ['import', 'detaljer']))
+    commitMessageContains(login, '.', ['detaljer for testingen', 'testingen av implementasjonen'])
   )) {
     completed.push(7);
   }
@@ -208,21 +223,35 @@ function getGitHubToken() {
   throw new Error('No GitHub auth found. Set GH_TOKEN env var or run: gh auth login');
 }
 
-// ── Fork discovery ───────────────────────────────────────────────────────────
+// ── Participant discovery ────────────────────────────────────────────────────
 
-function fetchForks() {
+function fetchParticipants() {
   const token = getGitHubToken();
-  const raw = execSync(
-    `curl -s -H "Authorization: Bearer ${token}" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${REPO}/forks?per_page=100"`,
-    { encoding: 'utf8' }
-  );
-  const forks = JSON.parse(raw);
-  if (!Array.isArray(forks)) {
-    throw new Error(`GitHub API error: ${JSON.stringify(forks)}`);
+  const participants = [];
+  for (let page = 1; ; page++) {
+    const raw = execFileSync('curl', [
+      '--fail', '--silent', '--show-error',
+      '-H', `Authorization: Bearer ${token}`,
+      '-H', 'Accept: application/vnd.github+json',
+      `https://api.github.com/repos/${SOURCE_REPO}/branches?per_page=100&page=${page}`,
+    ], { encoding: 'utf8' });
+    const branches = JSON.parse(raw);
+    if (!Array.isArray(branches)) {
+      throw new Error(`GitHub API error: ${JSON.stringify(branches)}`);
+    }
+    for (const branch of branches) {
+      if (!branch.name.startsWith('ki-')) continue;
+      const login = branch.name.slice('ki-'.length);
+      if (!/^[A-Za-z0-9-]+$/.test(login) || isExcluded(login)) continue;
+      participants.push({
+        login,
+        branchName: branch.name,
+        avatarUrl: `https://github.com/${login}.png`,
+      });
+    }
+    if (branches.length < 100) break;
   }
-  return forks
-    .map(f => ({ login: f.owner.login, avatar_url: f.owner.avatar_url, repo_name: f.name }))
-    .filter(f => !EXCLUDED_USERS.includes(f.login));
+  return participants;
 }
 
 // ── Main loop ────────────────────────────────────────────────────────────────
@@ -230,26 +259,28 @@ function fetchForks() {
 async function mainLoop() {
   while (true) {
     try {
-      const forks = fetchForks();
-      console.log(`[loop] ${forks.length} fork(s) found`);
+      const discoveredParticipants = fetchParticipants();
+      console.log(`[loop] ${discoveredParticipants.length} participant branch(es) found`);
 
-      for (const fork of forks) {
-        const { login, avatar_url } = fork;
+      for (const participant of discoveredParticipants) {
+        const { login, avatarUrl, branchName } = participant;
         try {
           if (isExcluded(login)) continue;
           if (!state.participants[login]) {
+            initWorktree(login);
             state.participants[login] = {
               login,
-              avatarUrl: avatar_url,
-              repoName: fork.repo_name,
+              avatarUrl,
+              branchName,
               completedModules: [],
               lastChecked: new Date().toISOString(),
             };
-            initWorktree(login, fork.repo_name);
-            console.log(`[fork] new participant: ${login}`);
-            broadcast('fork', { login, avatarUrl: avatar_url });
+            console.log(`[participant] new: ${login}`);
+            broadcast('fork', { login, avatarUrl, branchName });
           } else {
-            syncWorktree(login, state.participants[login].repoName);
+            state.participants[login].branchName = branchName;
+            state.participants[login].avatarUrl = avatarUrl;
+            syncWorktree(login);
           }
         } catch (err) {
           console.warn(`[warn] ${login}: ${err.message}`);
@@ -345,18 +376,17 @@ const server = http.createServer((req, res) => {
     dynamicExcluded.delete(login);
     // Re-sync the user immediately so they appear in state again
     try {
-      syncWorktree(login);
       if (!state.participants[login]) {
-        const forks = fetchForks();
-        const fork = forks.find(f => f.login === login);
-        if (fork) {
+        const participant = fetchParticipants().find(p => p.login === login);
+        if (participant) {
           state.participants[login] = {
             login,
-            avatarUrl: fork.avatar_url,
+            avatarUrl: participant.avatarUrl,
+            branchName: participant.branchName,
             completedModules: [],
             lastChecked: new Date().toISOString(),
           };
-          initWorktree(login, fork.repo_name);
+          initWorktree(login);
         }
       }
       if (state.participants[login]) {
