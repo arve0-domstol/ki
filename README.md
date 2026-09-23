@@ -30,46 +30,48 @@ Følg anvisningene og opplev hvordan utvikling kan gjøres med vanlig norsk, ute
 ## Innhold
 
 ### Del 1 – Oppsett og kom i gang
-Sett opp GitHub Codespaces og koble til Copilot eller OpenRouter.
-- Opprett en fork og åpne kodebasen i nettleseren med Codespaces
-- Koble til Copilot (Pro/Pro+/Enterprise) eller OpenRouter med API-nøkkel
-- Sjekk at chat fungerer ved å lage et sammendrag av kurset
+Sett opp verktøyene, klargjør kodebasen og kontroller at Copilot fungerer.
+- Installer Git, Visual Studio Code og GitHub CLI
+- Sjekk at du har GitHub Copilot Enterprise og opprett et eget Git-worktree
+- Test chatten ved å lage et sammendrag av kurset og lagre resultatet i Git
 
 ### Del 2 – Chat som verktøy
-Chat er raskere enn å google fordi den forstår din kontekst.
+Bruk chatten til spørsmål, små endringer og utforskning av kodebasen.
 - Spør om ukjent teknologi og kodebasen med naturlig norsk
-- Gjøre små kontekstsensitive endringer i koden
-- Utforske og forstå eksempelapplikasjonen _tidtaker_
+- Gjør små, kontekstavhengige endringer i kode
+- Utforsk teknologien i eksempelapplikasjonen _lovisa-web_
 
 ### Del 3 – Kontekst
 Dårlige svar skyldes ofte manglende kontekst – her lærer du å styre modellen.
 - Legg til filer som kontekst for mer presise svar
 - Marker enkeltlinjer for å holde modellen fokusert
-- Hent oppdatert informasjon fra internett for å unngå utdaterte svar
+- Hent oppdatert informasjon fra internett og se kostnaden ved en chat-sesjon
 
 ### Del 4 – Agenter
 Agenter kan gjøre mer enn å svare – de kan endre koden din.
-- La agenten endre implementasjon og kjøre eksisterende tester
-- Gi agenten en full arbeidsliste i én instruks (TDD, dokumentasjon, sikkerhetsvurdering, commit)
-- Bruk `AGENTS.md` for å unngå å gjenta de samme instruksene om og om igjen
+- La agenten implementere en tilfeldig testperson-knapp og verifisere resultatet
+- Gi agenten en full arbeidsliste med TDD, dokumentasjon, sikkerhetsvurdering og commit-melding
+- Bruk `AGENTS.md` for å gjenbruke standardinstruksene
 
 ### Del 5 – Feilsøking
 KI er svært god på feilmeldinger og stack traces.
-- Gi agenten feilbeskrivelsen og la den finne og fikse årsaken
+- Analyser en produksjonsfeil ved hjelp av stack trace og Git SHA
+- Gi agenten tilgang til logger gjennom den integrerte nettleseren
 
 ### Del 6 – Utforskning og skills
 Bruk KI som sparringspartner og utvid agenten med gjenbrukbare skills.
-- La agenten utforske løsninger du ikke hadde tenkt på selv
-- Installer og bruk _grill-me_ skill for strukturert problemutforskning
-- Legg til HTML-elementer fra nettleseren som kontekst
-- Lag og del egne skills for gjenbruk på tvers av prosjekter
+- Utforsk en innloggingshjelp for testbrukere med agenten
+- Installer og bruk _grill-me_-skill for strukturert problemutforskning
+- Lag en implementasjonsplan som kan brukes i neste del
 
 ### Del 7 – Planer
 En god plan lar agenten jobbe selvstendig over lengre tid.
-- Lag et detaljert plandokument agenten kan jobbe fra uten avbrudd
-- Bruk Playwright MCP-server for å styre nettleseren med naturlig språk
-- Bruk OpenCode CLI som alternativ til Copilot Chat i terminalen
-- La agenten implementere planen fra start til slutt
+- Vurder og utvid implementasjonsplanen til den kan gjennomføres selvstendig
+- Bruk Playwright MCP-server og OpenCode CLI for å undersøke innloggingsflyten
+- La Copilot implementere planen med subagenter og ende-til-ende-tester
 
 ### Del 8 – Veien videre
-Forslag til vei videre, tips og triks som er kjekt å kjenne til.
+Lær videre om selvstendig agentarbeid, verifikasjon og gode arbeidsmåter.
+- Forbedre agentens resultater når den jobber uten oppfølging
+- Håndter feil, fullt kontekstvindu og flere agenter med Git-worktrees
+- Vurder tester, modellvalg, kostnad, lokal kjøring og kodekvalitet
