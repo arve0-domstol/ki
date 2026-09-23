@@ -3,12 +3,14 @@ Utforskningen fra forrige steg er et fint utgangspunkt for å lage en plan. En p
 
 Hvis du ikke gjorde det i forrige steg, lagre oppsummeringen nå:
 
->  Lagre oppsummeringen til eksport.md.
+>  Lagre oppsummeringen til innlogging-testbrukere.md, slik at det kan benyttes som en implementasjonsplan.
 
 ## Oppgave: Vurder om det er nok informasjon
-Skumles eksport.md. Hvis du selv skulle implementert denne funksjonaliteten, ville du hatt nok informasjon til å lage den 100% uten å bruke andre kilder?
+Skumles innlogging-testbrukere.md. Hvis du selv skulle implementert denne funksjonaliteten, ville du hatt nok informasjon til å lage den 100% uten å bruke andre kilder? Stemmer alle antakelser med slik du ønsker det?
 
-Hvis du ikke holdt på lenge og var nøye med å gi den elementer fra timeføringsprogrammet, tipper jeg den ikke inneholder nok informasjon. Spesielt slike detaljer som hvordan en skal klikke mellom uker og hvilke felt som må fylles ut.
+Hvis du ikke holdt på lenge i grill-me-sesjonen, tipper jeg du ikke er 100% enig eller har nok informajon. Spesielt slike detaljer som hvor lenge en reservasjon skal vare, eller hvordan playwright skal gjennomføre innloggingen.
+
+Dette er også årsaken til at vi bruker planer. Planer konkretiserer alle mulige detaljer som en normalt ikke tenker over. Agenten er laget for å komme seg i mål, hvordan den kommer seg dit, og derfor får en ofte dårlige resultater med "lag meg en side for testbrukere som hjelper å logge meg inn".
 
 Hvis svaret ditt er "ja", da har du en plan 🙌 Hvis ikke, gjør oppgavene under.
 
@@ -20,80 +22,48 @@ Her skal vi bruke to verktøy for å utvide planen:
 
 _Playwright MCP-server_ gir oss muligheten til å styre en nettleser med naturlig språk, "gå til den siden", "trykk på det", osv. _OpenCode CLI_ er en AI-agent, tilsvarende Copilot.
 
-Grunnen til at vi bruker OpenCode CLI er fordi organisasjonen som har ditt Copilot-abonnement kan velge å skru av MCP-støtte i VSCode dersom du har enterprise-abonnementet. Dette omgår vi ved å bruke OpenCode, og får samtidig erfaring med å bruke agenten fra kommandolinje. Det er ingen stor forskjell fra det vi har gjort til nå, det er fortsatt en chat, en gir instrukser og en kan legge til filer og nettsted som kontekst, den støtter AGENTS.md og skills, men grensesnittet er ulikt. Eksempelvis legger en til filer med `@filnavn` istedenfor å trykke på knappene i VSCode.
+Grunnen til at vi bruker OpenCode CLI er fordi organisasjonen har valgt å skru av MCP-støtte i VSCode for å unngå sikkerhetshendelser. Dette omgår vi ved å bruke OpenCode, og får samtidig erfaring med å bruke agenten fra kommandolinje. Det er ingen stor forskjell fra det vi har gjort til nå, det er fortsatt en chat, en gir instrukser og en kan legge til filer og nettsted som kontekst, den støtter AGENTS.md og skills, men grensesnittet er ulikt. Eksempelvis legger en til filer med `@filnavn` istedenfor å trykke på knappene i VSCode.
 
-## Oppgave: Logge på timeføringsprogrammet på egen PC
-Agenten kan hente nettsider selv, men da har den ikke dine cookies og innlogginger. For å la agenten se timeføringsprogrammet og klikke i det, skal vi bruke en [Playwright](https://playwright.dev/) først lokalt for å logge på.
+## Oppgave: Koble OpenCode på Github-abonnementet
+Vi så tidligere at agenten kan hente nettsider selv og at den kan gjøre handlinger med innebygd nettleser. Dette er tilsvarende som å bruke innebygd nettleser, der vi skal bruke [Playwright](https://playwright.dev/) for å logge på og utbedre planen.
 
-Siden vi kjører oppgavene i Codespaces som er en VM på Github, må vi logge på timeføringsprogrammet på egen PC, så overføre cookies til Codespaces. Codespaces kan åpne nettlesere via VNC eller remote X11, men det er knotete. Dette er enklere:
-
-1. Åpne en terminal på egen PC.
-2. Installer playwright: `npm install --global playwright && npx playwright install chrome`
-3. Start playwright i opptaksmodus: `npx playwright codegen --save-storage=auth.json`
-4. Naviger til timeføringssiden.
-5. Logg inn.
-6. Lukk nettleseren.
-7. Verifiser at du har en auth.json med cookies.
-8. Kopier innholdet i filen,
-9. Opprett filen tidtaker/auth.json i Codespaces med innholdet.
-
-Merk: For å gjennomføre timeføringen kunne vi benyttet denne metoden for å finne riktige ting å trykke på, men vi skal heller la agenten finne ut av det selv.
-
-Tips: For å holde sesjonen aktiv, slik at du ikke logges ut, kan du ha åpen en sesjon med playwright lokalt:
-
-```shell
-npx playwright codegen --save-storage=auth.json --load-storage=auth.json
-```
-
-## Oppgave: Koble OpenCode til AI-leverandør
-1. I Codespaces, åpne terminalen
-2. Gå til tidtaker-mappen: `cd tidtaker`
+1. Åpne en terminal.
+2. Installer opencode: `npm install --global @opencode/cli`
 3. Start `opencode`
 4. Skriv `/connect` og trykk enter
-5. Følg anvisningen for å logge på Github eller OpenRouter
-6. Skriv `/mcps`
-7. Verifiser at den viser `playwright connected ✔️ connected`
+5. Søk etter _Github Copilot_
+6. Velg _GitHub.com Public_
+7. Følg anvisningen for å logge på Github
+8. Skriv `/mcps`
+7. Verifiser at den viser `playwright connected ✔️`
 
-## Oppgave: Verifisere at Playwright fungerer fra OpenCode i Codespaces
+## Oppgave: Verifisere at Playwright fungerer
 I OpenCode, skriv denne prompten:
 
-> åpne <url> med playwrigh chromium, bruk cookies fra auth.json, la skjermstørrelse være 1024x768, lagre skjermbilde til timeføring1.png
+> åpne localhost:3000 med playwrigh chromium
 
-Åpne skjermbildet og sjekk at du er innlogget. Fortsett med noe som dette:
+Verifiser at Chrome åpnet og gikk til innloggingssiden.
 
-> Naviger til Hjem / Timelister / Timeregistrering. Lagre skjermbilde til timeføring2.png
+> Logg inn med testperson-hardhudet-avgrunn@domstoladministrasjonen.no med passord test.hardhudet78)=
 
-Hvis OK, prøv:
+Hvis OK, oppdater planen:
 
-> Legg inn en rad med timeføring. Trykk på feltene og velg første alternativ på valg som blir synlig. Legg inn teksten "AI-kurs" på beskrivelse og 1.5 timer tirsdag. Lagre skjermbilde til timeføring3.png
+> @innlogging-testbrukere.md utvid planen med aktuelle ting en må trykke på for å teste innloggingen. Bruk selektorer som sannsynligvis ikke endrer seg, slik som tekst eller titler. Fjern eventuelle setninger om mocking av Entra.
 
-Så ukesnavigering:
-
-> Lagre endringene. Naviger til neste uke. Lagre skjermbilde til timeføring4.png
-
-Og til en bestemt uke:
-
-> Finn den enkleste måten å navigere til første uke i mai, noe som er deterministisk. Lagre skjermbilde til timeføring5.png
-
-Og tilbake igjen, for å sjekke at timeføringen ble lagret:
-
-> Naviger tilbake til uken vi fylte inn. Lagre skjermbilde til timeføring6.png
-
-Dette er informasjonen som planen trenger, be agenten legge det til planen:
-
-> @eksport.md utvid planen med aktuelle ting en må trykke på for å gjennomføre timeføringen. Bruk selektorer som sannsynligvis ikke endrer seg, slik som tekst eller titler.
-
-Lagre endringene i eksport.md:
+Lagre endringene i innlogging-testbrukere.md:
 
 ```shell
-git add tidtaker/eksport.md
-git commit -m "flere detaljer for eksport/import"
+git add **/innlogging-testbrukere.md
+git commit -m "flere detaljer for testingen av implementasjonen"
 git push
 ```
 
 ## Oppgave: Start implementasjon av planen
-Åpne en ny chat og start implementasjonen. Du velger selv om du ønsker å fortsette i OpenCode eller om du går tilbake til Copilot Chat. Du kan også teste Copilot CLI i terminal ved å starte `copilot`. Dersom du bruker Copilot Chat i VSCode, sett variant til `Copilot CLI` (nederst til venstre i chat, endre fra `Local`).
+Nå skal vi la agenten implementere planen. Når vi implementerer en plan, starter vi alltid med en fersk sesjon. Dette er fordi planleggingen har lest mange filer som har fyllt konteksten, innhold som agenten ikke trenger å vite om nå.
 
-> @eksport.md implementer funksjonaliteten beskrevet
+1. I OpenCode, start en ny sesjon: `/clear`
+2. Be agenten om å implementere planen.
+
+> @innlogging-testbrukere.md implementer funksjonaliteten som er beskrevet
 
 Neste steg er [08-veien-videre.md](08-veien-videre.md).
