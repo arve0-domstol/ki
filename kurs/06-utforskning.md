@@ -7,16 +7,20 @@ Til dere som sier: Du kan ikke stole på en KI-modell! Nei, du kan heller ikke s
 
 Så, la oss utforske!
 
-## Oppgave: Hvordan bruke tidtakingene i ditt timeføringsprogram?
-Tidtakingen sparer oss for noe manuelt vedlikehold av timelister på en lapp eller i et regneark, men den største tidstyven i timeføring er å legge inn timene i Enterprise Economy Ultra fra din favorittleverandør av programvare.
+## Oppgave: Hvordan få testpersoner ut i nye Lovisa
+Den lokale HTML-siden sparer oss for noe klikking i [Confluence](https://domstol.atlassian.net/wiki/spaces/TEST/pages/4929093664/Liste+over+syntetiske+testmedarbeidere?xpis=eyJicmlkZ2UiOiJxdWlja0ZpbmQiLCJpZCI6IjE3OTAxNjY5MTE1NzUiLCJzb3VyY2UiOiJjb25mbHVlbmNlIn0%3D), 
+men den største tidstyven i daglig arbeid er å vite om, finne frem og bruke kunnskapen om testbrukerne. 
+La oss gjøre det enklere og putte testbrukerne rett i fleisen når en åpner nye Lovisa.
 
 Her skal vi bruke en [skill](https://agentskills.io) for å hjelpe oss å finne ut hvordan problemet løses. En skill er tilsvarende AGENTS.md, men kun navnet og beskrivelsen legges til i kontekst. Agenten bestemmer selv når skillen skal tas i bruk. Å ta i bruk er her å legge hele innholdet til skillen i konteksten, altså utvide instruksen.
 
-Vi starter med å legge til [grill me skill](https://github.com/mattpocock/skills/blob/main/skills/productivity/grill-me/SKILL.md):
+Vi starter med å legge til [grilling, også kalt grill-me](https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md):
 
 ```shell
 mkdir -p "$(git rev-parse --show-toplevel)/.agents/skills/grill-me"
-curl --location https://raw.githubusercontent.com/mattpocock/skills/refs/heads/main/skills/productivity/grill-me/SKILL.md --output "$(git rev-parse --show-toplevel)/.agents/skills/grill-me/SKILL.md"
+curl --silent --location https://raw.githubusercontent.com/mattpocock/skills/refs/heads/main/skills/productivity/grilling/SKILL.md \
+    | sed 's/name: grilling/name: grill-me/' \
+    > "$(git rev-parse --show-toplevel)/.agents/skills/grill-me/SKILL.md"
 git add .agents/skills
 git commit -m "la til grill-me skill"
 git push
@@ -24,29 +28,22 @@ git push
 
 Prøv nå denne instruksen:
 
-> /grill-me Jeg ønsker å benytte tidtakingene til å automatisk fylle inn mine timelister i en webapplikasjon. Jeg ønsker at timene skal rundes til nærmeste halvtime. Nedlasting av tidtaking skal laste ned en måned. Jeg ønsker enten en plugin for nettleser eller et script for playwright. Det skal være mulig for meg å logge inn i timeføringssystemet selv, og deretter skal programmet gjøre timeføringen. For plugin kan timeføringen trigges av at jeg drar over filen jeg lastet ned. For playwright kan du foreslå hvordan en gir filen. Beskriv fordeler og ulemper med plugin vs playwright og hjelp meg til å utforske hvordan dette kan løses.
+> /grill-me Jeg skal bygge en innloggingshjelp som del av Next.js-applikasjonen i `products/lovisa-web`, basert på testpersonene i `products/testpersoner` og den eksisterende Entra-konfigurasjonen. Løsningen skal gjøre det enkelt å finne en relevant testbruker og starte ordinær Entra ID-innlogging med brukernavnet forhåndsutfylt og passordet klart på utklippstavlen. Innloggingshjelpen skal ikke autentisere brukeren selv, omgå Entra ID eller lagre aktive innloggingsøkter på vegne av testeren. Løsningen skal ha mulighet for å reservere en testbruker, der første gang blir en spurt om epost-adresse som lagres til localStorage.
 
 Merk: _/grill-me_ aktiverer skillen. Aktivering kan også skje ved at beskrivelsen til skill inneholder "bruk denne instruksen hver gang du lager git commits" eller at din instruks er "bruk grill-me skill".
 
-Hvis den spør om hvilket timeføringssystem du bruker, se neste oppgave.
+Typisk kan du gå videre med:
 
-## Oppgave: Legge til del av nettside som kontekst
-De fleste kjipe timeføringssystemer har ingen API-er, derfor har jeg valgt å automatisere via en plugin i nettleser. Grill-me er ikke deterministisk, men sannsynligvis vil den spørre om hvordan timeføringsprogram du bruker, samt om hvordan timene skal legges inn. Da kan du mate det spesifikke HTML-elementet fra timeføringsprogrammet som kontekst:
+> Jeg ønsker følge dine anbefalninger.
 
-1. _Ctrl/Cmd + Shift + P_
-2. _Browser: Open Integrated Browser_
-3. Gå til og logg inn på timeføringssiden.
-4. Trykk på knappen bak URL _Share with agent_ og del med agenten.
-5. Prøv denne instruksen.
+eller
 
-> jeg bruker timeføringssystemet som du ser på websiden
-
-Dersom du får spørsmål om spesifikke element, lar neste knapp _Add element to chat_ et spesifikt HTML-element.
+> q5: Løsningen skal ha mulighet for å reservere en testbruker, der resultatet lagres i mssql. første gang blir en spurt om epost-adresse som lagres til localStorage.
 
 ## Oppgave: Avslutte
 Grill-me er omstendig og en kan sitte i en time og svare på spørsmål i noen tilfeller. Når du har gitt informasjon om hvordan timene skal føres inn, be om å avslutte:
 
-> Det er nok nå. Lag en oppsummering av det du har så langt, og gjør antakelser for det du ikke vet. Skriv oppsummeringen her, men lagre resultatet også til eksport.md.
+> Det er nok nå. Lag en oppsummering av det du har så langt, og gjør antakelser for det du ikke vet. Skriv oppsummeringen her, men lagre resultatet også til innlogging-testbrukere.md, slik at det kan benyttes som en implementasjonsplan.
 
 Lagre resultatet i git og push det.
 
@@ -60,7 +57,7 @@ Tenk "jeg kommer til å bruke denne instruksen igjen, men den trengs ikke alltid
 4. Skills kan installeres i din hjemmekatalog, slik at du kan benytte de på tvers av prosjekter.
 5. Brukere som vet input up-front kan gi de i initiell instruks: "upgrade java, case number is GLAD-491"
 6. Det finnes mange kataloger over skills på nett du kan prøve, eksempelvis [skills.sh](https://skills.sh).
-7. KI-modeller er flinke til å skrive skills, her er en [skill for å skrive skills](https://github.com/mattpocock/skills/blob/main/skills/productivity/write-a-skill/SKILL.md) 🤓
+7. KI-modeller er flinke til å skrive skills, be agenten hjelpe deg med å skrive en 🤓
 
 
 Neste steg er [07-planer.md](07-planer.md).
