@@ -32,7 +32,7 @@ Tips: På Windows? Bruk _Git Bash_ til å kjøre kommandoene.
 
 ### Oppgave: Sjekk at det virker
 1. Åpne chat-vinduet, om det ikke er åpent (Ctrl + Alt/Cmd + I)
-2. Finn og velg modellen *GPT-5.6 Luna* (vi bruker denne modellen for alle oppgaver inntil vi ser på ulike modeller senere i kurset)
+2. Finn og velg modellen *GPT-6 Luna* (vi bruker denne modellen for alle oppgaver inntil vi ser på ulike modeller senere i kurset)
 3. Skriv inn denne instruksen:
 
 > lag et sammendrag av kurset
