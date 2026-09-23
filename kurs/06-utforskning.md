@@ -28,7 +28,7 @@ git push
 
 Prøv nå denne instruksen:
 
-> /grill-me Jeg skal bygge en innloggingshjelp som del av Next.js-applikasjonen i `products/lovisa-web`, basert på testpersonene i `products/testpersoner` og den eksisterende Entra-konfigurasjonen. Løsningen skal gjøre det enkelt å finne en relevant testbruker og starte ordinær Entra ID-innlogging med brukernavnet forhåndsutfylt og passordet klart på utklippstavlen. Innloggingshjelpen skal ikke autentisere brukeren selv, omgå Entra ID eller lagre aktive innloggingsøkter på vegne av testeren. Løsningen skal ha mulighet for å reservere en testbruker, der første gang blir en spurt om epost-adresse som lagres til localStorage.
+> /grill-me Jeg skal bygge en innloggingshjelp som del av Next.js-applikasjonen i `products/lovisa-web`, basert på testpersonene i `products/testpersoner` og den eksisterende Entra-konfigurasjonen. Løsningen skal gjøre det enkelt å finne en relevant testbruker og starte ordinær Entra ID-innlogging med brukernavnet forhåndsutfylt og passordet klart på utklippstavlen. Innloggingshjelpen skal ikke autentisere brukeren selv, omgå Entra ID eller lagre aktive innloggingsøkter på vegne av testeren. Løsningen skal ha mulighet for å reservere en testbruker, der første gang blir en spurt om epost-adresse som lagres til localStorage. En skal bruke playwright til å spesifisere og drive utviklingen av siden, slik at en sjekker at all funksjonalitet fungerer.
 
 Merk: _/grill-me_ aktiverer skillen. Aktivering kan også skje ved at beskrivelsen til skill inneholder "bruk denne instruksen hver gang du lager git commits" eller at din instruks er "bruk grill-me skill".
 
