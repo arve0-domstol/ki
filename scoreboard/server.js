@@ -27,7 +27,11 @@ const state = { participants: {} };
 const dynamicExcluded = new Set();
 
 function isExcluded(login) {
-  return EXCLUDED_USERS.includes(login) || dynamicExcluded.has(login);
+  const normalizedLogin = login.toLowerCase();
+  return EXCLUDED_USERS.some(user => {
+    const normalizedUser = user.toLowerCase();
+    return normalizedLogin === normalizedUser || normalizedLogin.startsWith(`${normalizedUser}-`);
+  }) || dynamicExcluded.has(login);
 }
 
 // ── SSE clients ──────────────────────────────────────────────────────────────
