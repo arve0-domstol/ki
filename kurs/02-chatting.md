@@ -25,43 +25,6 @@ Min erfaring er at norsk er like godt som engelsk, samt at min hjerne er flinker
 
 > Oversett dette til engelsk: ....
 
-## Kodebase
-Kurset baserer seg på kodebasen i [lovisa_core](https://github.com/domstolene/lovisa_core).
-
-Start med å gå til repoet:
-
-```shell
-# dersom du ikke har klonet repoet fra før:
-# mkdir -p ~/domstolene
-# git clone https://github.com/domstolene/lovisa_core ~/domstolene/lovisa_core
-cd ~/domstolene/lovisa_core
-```
-
-Sjekk ut branchen `ki` i et nytt worktree:
-
-```shell
-export brukernavn=$(gh auth status --json hosts --jq '.hosts."github.com".[].login')
-# lager mappen ../lovisa_core-worktree-ki, starter fra branchen 'ki' og kaller vår egen branch for arve0-ki
-git worktree add ../lovisa_core-worktree-ki -b $brukernavn-ki ki
-```
-
-Feilet det? Da må du kanskje stashe arbeidet ditt først: `git stash`
-
-Åpne worktree i Visual Studio Code:
-
-```shell
-code ~/domstolene/lovisa_core-worktree-ki
-```
-
-Push branchen (brukes til scoreboard):
-
-```shell
-export brukernavn=$(gh auth status --json hosts --jq '.hosts."github.com".[].login')
-git push origin $brukernavn-ki
-```
-
-Tips: Vet du ikke hva [git worktree](https://git-scm.com/docs/git-worktree) er? Spør Copilot.
-
 ## Oppgave: Bli kjent med kodebasen
 Start en ny chat og prøv disse instruksene:
 
