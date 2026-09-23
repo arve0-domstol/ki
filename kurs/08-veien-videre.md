@@ -3,7 +3,7 @@ Nå er den strukturelle delen av kurset ferdig. Under er noen forslag til vei vi
 
 
 # Gode AFK resultater
-Nå "koker" agenten vår med den nye funksjonaliteten, og vi kan ta en kaffe, jobbe med noe annet eller gå hjem. Det vi ønsker å optimalisere i dette steget er at når agenten er ferdig, så skal resulatet være bra. Vi har allerede gjort noen grep her, ved å lage [AGENTS.md](../AGENTS.md).
+Nå "koker" agenten vår med den nye funksjonaliteten, og vi kan ta en kaffe, jobbe med noe annet eller gå hjem. Det vi ønsker å optimalisere i dette steget er at når agenten er ferdig, så skal resulatet være bra. Vi har allerede gjort noen grep her, ved å be agenten lage tester og kvalitetsikret planen.
 
 Her er noen ting jeg bruker å tenke på:
 
@@ -12,19 +12,19 @@ Her er noen ting jeg bruker å tenke på:
 3. Vet agenten hvordan arbeidet skal verifiseres? Har en instruks om hvordan det verifiseres. Jeg har guidet agenten til å lage gode tester som beskriver hensikt (e2e).
 4. Kunne jeg gitt flere instrukser, slik at agenten gjør mest mulig arbeid? Kan den også kjøre sikkerhetsvurdering, benchmark, forberede en commit-melding, foreslå arbeid videre, osv.
 
-For denne planen, tipper jeg at det ikke fungerer ut av boksen. Det er fordi vi har ikke laget noe oppsett for at agenten kan sjekke selv om det fungerer. Du kan nå velge om du chatter videre, for å korrigere:
+For denne planen, tipper jeg at noe fungerer ut av boksen, men ikke alt og ikke helt slik du så det for deg. Det er fordi vi ikke har vært veldig nøye med spesifikasjonen til testene. Du kan nå velge om du chatter videre, for å korrigere:
 
-> når jeg gjør x, så skjer det ingenting, kan du finne feilen og korrigere?
+> det virker, nesten, men ikke helt. legg til tester for dette og korriger feilene:
+> 1. visningen skal være en tabell med navn, epost, passord, rolle i domstol
+> 2. når en velger knappen "Start innlogging" så kommer ikke epost-adressen opp som et forslag, knappen skal også hete "Logg inn" og ha popover-teksten "Kopierer passord og går til innloggingssiden"
+> 3. reserver konto gjør ingenting
+> 4. siden spør ikke om epost-adressen for reservasjon første gang en besøker den
 
 ...eller starte på en ny chat for å utforske hvordan det kan testes:
 
-> er det mulig å teste chrome plugins med playwright?
+> hvordan kan vi forbedre testingen her? legg til tester for x, y og z.
 
-Akkurat her er det vanskelig på grunn av at jeg ikke ønsker å dele innloggingen med KI, men en kan kanskje gjøre noe som dette?
-
-> kan du lage meg et playwright-script jeg kan kjøre for å holde sesjonen i auth.json aktivt, slik at jeg ikke blir logget ut?
-
-Å finne ut hvordan agenten skal klare å verifisere sitt arbeid er hva jeg bruker mest hjernekapasitet på i mitt arbeid nå. Hvilke ting trenger den tilgang til? Hvordan kan jeg gjøre det sikkert? Hvordan kan jeg unngå at agenten overser instruks om verifikasjon?
+Å finne ut hvordan agenten skal klare å verifisere sitt arbeid er hva jeg bruker mest hjernekapasitet på i mitt arbeid nå. Hvilke ting trenger den tilgang til? Hvordan kan jeg gi tilgang på en sikker måte? Hvordan kan jeg unngå at agenten overser instruks om verifikasjon?
 
 
 # Jobbe med flere agenter samtidig
@@ -66,7 +66,7 @@ git worktree remove ../en-fiks
 
 
 # Agenten gjør ikke som jeg vil
-Dette er de tre vanligste variantene av at KI-modellen feiler på noe vis:
+Dette er de vanligste variantene av at KI-modellen feiler på noe vis:
 
 1. Den gjetter og gjør dårlig arbeid.
 2. Den kjører seg fast og kommer ikke videre.
@@ -78,7 +78,7 @@ Antakelser og overraskende løsninger er vanlig når instruksen er for dårlig. 
 
 > Du implementerte med React, men jeg foretrekker at man bruker vanilla js.
 
-Da er det bedre å stoppe agenten, gå tilbake til forrige sjekkpunkt og skrive instruksen på ny. Eksempelvis legge til det som var viktig for deg, eller be agenten skrive en plan, gjennomgå/korrigere den og så be agenten jobbe med implementasjonen.
+Da er det bedre å stoppe agenten, gå tilbake til forrige sjekkpunkt og skrive instruksen på ny. Eksempelvis legge til det som var viktig for deg, eller be agenten skrive en plan, gjennomgå/korrigere den og så be agenten gjennomføre implementasjonen ved hjelp av planen.
 
 ## Klarer ikke løse problemet
 En gang i blant vet ikke KI-modellen svaret "direkte". Altså klarer den ikke å bruke treningssettet sitt til å umiddelbart løse problemet. Istedenfor å la den koke lenge er det bedre å styre agenten frem til løsningen.
@@ -88,7 +88,7 @@ Her hjelper det med reel erfaring om hvordan problemet løses, men en kan også 
 > Vi sitter fast og finner ikke en løsning som fungerer. Ta et steg tilbake og tenk på hvordan vi kan feilsøke og finne ut av hva som er feil. Kan vi bruke noen verktøy eller metoder for å utelukke løsninger som er feil? Foreslå tre veier videre.
 
 ## Resultatet virker ikke
-Agenten er ferdig og den sier "nå er det ferdig og alt fungerer". En lystløgner med andre ord.
+Agenten er ferdig og den sier "nå er det ferdig og alt fungerer". Resultatet ser plausibelt ut, men virker ikke. En lystløgner med andre ord.
 
 Nesten alltid er dette på grunn av at agenten ikke har noen god måte å verifisere at hensikten eller målet med oppgaven er nådd. Ofte må en være ganske presis i instruksen sin, mer rom for tolkning, mindre presisjon.
 
@@ -112,7 +112,7 @@ Da kan [hooks](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-
 
 
 # Hva er gode tester for en agent?
-Agenten er veldig flink til å skrive tester, kanskje for flink. Eksempelvis, dersom du har kode som er vanskelig å teste på grunn av sterkt koblede avhengigheter, så mocker agenten gjerne bort avhengighetene for å teste en bit av koden. Den er sykt god på mocking, men tester med mye mocking representerer ofte dårlig kode og sårbare tester.
+Agenten er veldig flink til å skrive tester, kanskje for flink. Eksempelvis, dersom du har kode som er vanskelig å teste på grunn av sterkt koblede avhengigheter, så mocker agenten gjerne bort avhengighetene for å teste en bit av koden. Den er sykt god på mocking, men tester med mye mocking er et signal på dårlig kode og sårbare tester.
 
 Jeg ber ikke ageten skrive slike tester, jeg fokuserer kun på ende-til-ende tester. Det er utfallet, hensikten og formålet som er viktig. Selfølgelig ingen regler uten unntak, det gir mening å skrive tester for moduler du skal skrive om, men tenk deg om for hvilket grensesnitt du legger testene på. Kommer du deg lenger unna koden og nærmere produktet er det mye enklere å verifisere at testene er riktig.
 
@@ -128,9 +128,13 @@ I VSCode kan du se hvor mye av kontekstvinduet som er i bruk, her 9% av 200K tok
 
 De fleste agentene prøver å fikse fullt kontekstvindu for deg ved å kjøre en automatisk komprimering. Dette kan du også selv trigge ved å skrive `/compact`. Kompringering er essensielt "lag et sammendrag av denne sesjonen", der kall etter komprimering kun har med sammendrag + nye chats. Altså sendes ikke tidligere dialog med, slik som til vanlig.
 
-Et problem med komprimeringen er at sammendraget fjerner informasjon som du anser som viktig. Det ligner litt på å gi en kort instruks, der du ikke selv går gjennom den lengre planen som KI-modellen vil lage selv.
+Et problem med komprimeringen er at sammendraget fjerner informasjon som du anser som viktig. Det ligner litt på å gi en kort instruks, der du ikke selv går gjennom den lengre planen som KI-modellen vil lage selv. Kanksje fjernes et feilsteg, slik at modellen igjen går inn i gal retning en gang til.
 
-Uansett, når du havner i en slik situasjon, er svaret alltid å starte på ny med tomt kontekstvindu. Start en ny chat-sesjon, enten ved å bruke `/clear` eller ved å bruke plusstegnet.
+Uansett, når du havner i en slik situasjon, er svaret _alltid_ å starte på ny med tomt kontekstvindu. Start en ny chat-sesjon, enten ved å bruke `/clear` eller ved å bruke plusstegnet. Du kan også bruke agenten til å lage sammendraget som er nødvendig for å jobbe videre, ofte kalt _hand off_.
+
+> Vi kommer oss ikke videre. Lag et sammendrag av hva du har jobbet med så langt, hvorfor det ikke har virket, mulige veier videre og hensikten/målet med oppgaven.
+
+Bruk svaret fra instruksjonen til å starte en ny sesjon. Triks kan være å prøve en annen modell, gå opp et hakk i evne. Luna (måne) -> Terra (jorden) -> Sol.
 
 Tenk også på hvordan oppgaven kan løses opp i flere deler. Du kan godt be agenten hjelpe deg med det:
 
@@ -140,11 +144,11 @@ Tenk også på hvordan oppgaven kan løses opp i flere deler. Du kan godt be age
 # Subagents
 Subagenter er agenter som er spunnet opp fra agenten du snakker med. Det er en effektiv måte å håndtere store oppgaver på, der subagenten for kontekst for en deloppgave, og hovedagenten orkestrerer.
 
-Det høres avansert ut, men fra KI-modellens side er det å spinne opp en subagent er det samme som å kjøre en kommando. Altså kan vi aktivere det med vanlig norsk, så lenge agenten vår støtter subagenter.
+Det høres avansert ut, men fra KI-modellens side er det å spinne opp en subagent er det samme som å kjøre en kommando. Altså kan vi aktivere det med vanlig norsk, så lenge agenten støtter subagenter.
 
 Dersom du har en stor plan med mange deloppgaver kan du prøve noe som dette:
 
-> implementer planen. bruk subagenter til å implementere delene, gi de tilstrekkelig informasjon om oppgaven og hvordan den skal testes. du tar ansvar som orkestrator og kvalitetsjekk etter subagenten har gjort seg ferdig.
+> implementer planen. bruk subagenter til å implementere delene, gi de tilstrekkelig informasjon om oppgaven og hvordan den skal testes. du tar ansvar som orkestrator og kvalitetsjekker etter subagenten har gjort seg ferdig.
 
 Subagenter er også en fin måte å utforske mange ulike ideer:
 
@@ -156,7 +160,7 @@ Dersom en kombinerer [subagents](#subagents) med [resultatet virker ikke](#resul
 
 Dette kommer i mange farger og former, her er noen ressurser du kan sjekke ut:
 
-- [ralphx](https://github.com/iyaki/ralphex)
+- [specralph](https://github.com/iyaki/specralph)
 - [claude goals](https://code.claude.com/docs/en/goal)
 
 
@@ -182,12 +186,21 @@ Hvis du har en ny macbook med mye RAM, er det relativt enkelt å kjøre en model
 Du kan prøve å starte GPT-OSS som fungerer til mye:
 ```shell
 brew install llama.cpp
+# modellen er 12 GB og tar noe tid å laste ned, https://huggingface.co/ggml-org/gpt-oss-20b-GGUF
 llama-server -hf ggml-org/gpt-oss-20b-GGUF --jinja -c 0 --host 127.0.0.1 --port 8080
 ```
 
-Se om den klarer å trekke ut informasjon fra JSON:
+Gå til http://localhost:8080 og se om den klarer å trekke ut informasjon fra JSON:
 
-> Se innlimt JSON. Hent ut x y og z. La output være strukturert JSON på formen {"x": "...", "y": "...", "z": "..."}
+> Se innlimt JSON:
+> [{"kommentar": "Ultrafiolett Drage (kommentarer serialiseres ikke)","kommentar": "https://domstol.atlassian.net/wiki/spaces/TEST/pages/3416293431/Hvordan+teste+Akt+rportalen+for+advokater#Oversikt-over-brukere-i-TEST","ssn": "22830699035","title": "Advokat","regnr": "6638","practices": [ {"kommentar": "AKADEMISK AKADEMISK KATT ALMISSE","orgNumber": 311032348,"firmanr": "11439","hovedpraksis": true,"authorizedRepresentatives": [ {"ssn": "01907495309","title": "Advokatfullmektig","regnr": "1" }, {"ssn": "13923949741","title": "Advokatfullmektig","regnr": "2" }, {"ssn": "02844399033","title": "Advokatfullmektig","regnr": "3" }, {"kommentar": "Momentan Drage","ssn": "13830198487","title": "Advokatfullmektig","regnr": "7870" }] }, {"kommentar": "OPPRIKTIG UNG KATT EDDERKOPP","orgNumber": 313969401,"subOrgNumber": 315869781,"firmanr": "1234","hovedpraksis": false,"authorizedRepresentatives": [ {"kommentar": "STRENG GRANSKNING","ssn": "05914798037","title": "Advokatfullmektig","regnr": "12341" }, {"kommentar": "INTRIKAT GRANSKNING","ssn": "07894497836","title": "Advokatfullmektig","regnr": "12342" }] }] }, {"kommentar": "Famos Drage","ssn": "28836499834","title": "Advokat","regnr": "570","practices": [ {"orgNumber": 314755618,"firmanr": "7300","hovedpraksis": true,"authorizedRepresentatives": [ {"kommentar": "Momentan Drage","ssn": "13830198487","title": "Advokatfullmektig","regnr": "7870" }] }, {"kommentar": "KOMPLISERT UVITENDE KATT INDUSTRI","orgNumber": 313613623,"firmanr": "31361","hovedpraksis": false,"authorizedRepresentatives": [ {"ssn": "01907495309","title": "Advokatfullmektig","regnr": "1" }, {"ssn": "13923949741","title": "Advokatfullmektig","regnr": "2" }] }] }, {"kommentar": "Vis Drage","ssn": "03880399534","title": "Advokat","regnr": "6427","practices": [ {"orgNumber": 214256762,"subOrgNumber": 311950061,"firmanr": "7600","hovedpraksis": true,"authorizedRepresentatives": [] }] }, {"kommentar": "Ren Drage","ssn": "23916396597","title": "Advokat","regnr": 4800,"practices": [ {"orgNumber": 312584719,"firmanr": "8061","hovedpraksis": true,"authorizedRepresentatives": [] }] }, {"kommentar": "Kunst Drage","ssn": "05929599243","title": "Advokat","regnr": "9996841","practices": [ {"orgNumber": 312475790,"firmanr": "8993","hovedpraksis": true,"authorizedRepresentatives": [] }] }, {"kommentar": "Umake Drage","ssn": "16860899527","title": "Advokat","regnr": "30","practices": [ {"kommentar": "Hovedkontoret til 311950061","orgNumber": 214256762,"firmanr": "5","hovedpraksis": true,"authorizedRepresentatives": [] }] }, {"kommentar": "Overflødig Drage","ssn": "10876297545","title": "Advokat","regnr": "311","practices": [ {"kommentar": "samme som Umake Drage, men ulikt firmanummer","orgNumber": 214256762,"firmanr": "555","hovedpraksis": true,"authorizedRepresentatives": [] }] }, {"kommentar": "Dyp Drage, samme fullmektige som Ultrafiolett Drage, vanlig i store firmaer","ssn": "20859299521","title": "Advokat","regnr": "40","practices": [ {"kommentar": "AKADEMISK AKADEMISK KATT ALMISSE","orgNumber": 311032348,"firmanr": "11439","hovedpraksis": true,"authorizedRepresentatives": [ {"ssn": "01907495309","title": "Advokatfullmektig","regnr": "1" }, {"ssn": "13923949741","title": "Advokatfullmektig","regnr": "2" }, {"ssn": "02844399033","title": "Advokatfullmektig","regnr": "3" }, {"kommentar": "Momentan Drage","ssn": "13830198487","title": "Advokatfullmektig","regnr": "7870" }] }] }, {"kommentar": "Nett Drage","ssn": "10866598482","title": "Advokat","regnr": "50","practices": [ {"kommentar": "FORDEKT GEOMETRISK TIGER AS, har to adresselinjer","orgNumber": 311131591,"firmanr": "143","hovedpraksis": true,"authorizedRepresentatives": [] }] }, {"kommentar": "Rettferdig Drage","ssn": "06817296279","title": "Advokat","regnr": "8062","practices": [ {"orgNumber": 312584719,"firmanr": "8061","hovedpraksis": true,"authorizedRepresentatives": [ {"kommentar": "Tøff Drage","ssn": "08849799143","title": "Advokatfullmektig","regnr": "8063" }] }] }, {"kommentar": "Sentral Drage","ssn": "29859499404","title": "Advokat","regnr": "8994","practices": [ {"orgNumber": 312475790,"firmanr": "8993","hovedpraksis": true,"authorizedRepresentatives": [] }] }]
+> Hent ut regnummer til alle advokatene, la output være en liste med tall i JSON, slik som [1,2,3]
+
+GPT-oss er også god på generell kunnskap og norsk:
+
+> Hva er det høyeste fjellet i Norge og hvor høyt er det?
+
+> Oversett dette til norsk: The /goal command sets a completion condition and Claude keeps working toward it without you prompting each step. After each turn, a small fast model checks whether the condition holds. If the model judges it not yet met, Claude starts another turn instead of returning control to you. The goal clears automatically once the condition is met, if the model judges the condition impossible to satisfy, or if a turn fails on an error you have to fix.
 
 Advarsel: Å gjøre seg kjent med de tekniske begrepene for KI-modeller er et kaninhull. Antall parametre, kvantifisert, mode of expert, gguf, osv. Her kan du synke mye tid. Tips, bruk gemini til å forklare hva de ulike tingene er.
 
@@ -204,6 +217,19 @@ Gitt at sannsynligheten er den samme eller omtrent lik, med agenter er `antall e
 
 Gode abstraksjoner (interfaces, modularitet). Bra testing (ende til ende, beskriver hensikt). Solid rekkverk (blue green deployments, automatiserte reviews). Du skjønner tegningen.
 
+Men kanskje enda viktigere, tror jeg, er å [gjøre koden slettbar](https://programmingisterrible.com/post/139222674273/write-code-that-is-easy-to-delete-not-easy-to).
+
+> Write code that is easy to delete, not easy to extend. [1]
+
+Hva betyr det? Jo, det betyr at koden har disse egenskapene:
+
+1. Koden lever på ett sted.
+2. Koden har et klart grensesnitt.
+3. Koden vet ikke om så mye.
+4. Funksjonaliteten kan slås av/på ved behov.
+
+Hvordan ble implementasjonen? Hvor mange eksisterende filer måtte endres? Hvis koden slettes i morgen, vil nye Lovisa fortsatt fungere?
+
 
 # Diktering
 Siden KI-modellene er så gode på språk og tastatur er tregere enn å snakke, prøv diktering. Det er effektivt spesielt i en planleggingsfase der du ber agenten om å lage en plan.
@@ -216,11 +242,11 @@ På MacOS er diktering innebygd, du finner det under _Systeminnstillinger_, søk
 
 
 # Ulike typer modeller
-Kurset har bruk modellen _Claude Sonnet 4.6_ fordi den gir gode resultater, er relativt billig, samt at jeg er kjent med den. Ofte gir også _Auto_ gode resultater, men jeg anbefaler å låse ned en modell som du synes fungerer bra. Det er fordi modellene oppfører seg ulikt, slik at det blir en uvant opplevelse. Språket er allerede upresist, så en ønsker ikke flere variabler som kan ødelegge for godt resultat.
+Kurset har bruk modellen _GPT-6 Luna_ fordi den er billig og gir relativt gode resultater. Ofte gir også _Auto_ gode resultater, men jeg anbefaler å låse ned en modell som du synes fungerer bra. Det er fordi modellene oppfører seg ulikt, slik at det blir en uvant opplevelse. Språket er allerede upresist, så en ønsker ikke flere variabler som kan ødelegge for godt resultat.
 
 Kort sagt; billigere og raskere modeller er dårligere, dyrere og tregere modeller er bedre.
 
-En artig forskjell på Codex og Claude er at dersom du merker tekst med instruks og skriver `.` som kommando, da vil Codex klage "fikk ingen instruks, bare et punktum", men Claude vil gjennomføre instruksen. Det er med andre ord forskjell på villigheten til å gjette på hva brukeren mener. Uten at jeg har erfaringer med Codex, vil jeg tro den gjetter mindre og spør oftere. Det kan gi gode resultat dersom du chatter mye og ikke ønsker at agenten skal dure av gårde i en retning du ikke ønsker.
+En artig forskjell jeg oppdaget mellom GPT Codex og Claude Sonnet er at dersom du merker tekst med instruks og skriver `.` som kommando, da vil GPT Codex klage "fikk ingen instruks, bare et punktum", men Claude vil gjennomføre instruksen. Det er med andre ord forskjell på villigheten til å gjette på hva brukeren mener. Uten at jeg har mye erfaringer med GPT Codex, vil jeg tro den gjetter mindre og spør oftere. Det kan gi gode resultat dersom du chatter mye og ikke ønsker at agenten skal dure av gårde i en retning du ikke ønsker.
 
 
 # Ting KI kan gjøre
@@ -228,7 +254,7 @@ Prøv disse tingene:
 - lag et grafana dashboard, agenten produserer JSON basert instruks + curl av metrikk-endepunktet
 - gjøre review av kode, dokumentasjon eller planer: Gjennomgå denne x og finn blindsoner og uklarheter
 - oversette mellom norsk og engelsk
-- lage arkitekturskisser med mermaid som du kan legge i markdown
+- lage arkitekturskisser med mermaid, svg eller d2 som du kan legge i markdown
 - skrive forklarende commit meldinger, prøv dette når du har kodeendringer fra en chat du har jobbet i:
   > lag en passende git commit melding, den skal beskrive hva og hvorfor, ha både tittel og body. linjene i body skal ikke være lengre enn 80 chars. la output være en git kommando jeg kan kjøre selv
 - opprette pull requests:
@@ -236,8 +262,10 @@ Prøv disse tingene:
 
 
 # Tips fra folk på internett
-https://www.aihero.dev/ er bra. Vil Prøve å selge deg et kurs, men har også mye informasjon gratis, slik som ["hvordan KI-koding har endret hjernen min"]([ways-ai-coding-has-rewired-my-brain](https://www.aihero.dev/ways-ai-coding-has-rewired-my-brain)).
+https://www.aihero.dev/ er bra. Vil prøve å selge deg et kurs, men har også mye informasjon gratis, slik som ["hvordan KI-koding har endret hjernen min"](https://www.aihero.dev/ways-ai-coding-has-rewired-my-brain).
 
 [Alex Ziskind](https://www.youtube.com/@AZisk) har mye bra om hvordan en kjører KI-modeller lokalt, slik som [local AI just leveled up](https://www.youtube.com/watch?v=2t9XrPcAiHg).
 
 [Burke Holland](https://www.youtube.com/@BurkeHolland) har mye bra om Githubs produkter, slik som [intro til Copilot hooks](https://www.youtube.com/watch?v=03CfGf9iw_U).
+
+Lykke til!

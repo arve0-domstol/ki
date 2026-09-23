@@ -63,10 +63,20 @@ Nå skal vi la agenten implementere planen. Når vi implementerer en plan, start
 
 I tillegg skal vi benytte en mer avansert model for å holde styr på implementasjonen, _GPT-6 Sol_, som igjen kaller rimeligere subagenter for å implementere.
 
-1. I OpenCode, start en ny sesjon med `/clear`
-2. Velg modellen _GPT-6 Sol_ med `/models`
-3. Be agenten om å implementere planen med subagenter:
+OBS: Jeg klarte ikke få godt resultat med OpenCode på denne implementasjonen, men derimot Copilot klarte å one-shotte et fungerende resultat.
 
-> @innlogging-testbrukere.md implementer funksjonaliteten som er beskrevet. bruk subagenter for å implementere, gjerne med gpt-6 luna eller rimelige modeller. Sjekk arbeidet til subagenten, gi eventuelt tilbakemelding dersom det ikke er godt nok. Ikke avslutt før ende-til-ende testene kjører og verifiserer en vellykket innlogging.
+Endre hvor lenge Copilot får lov å holde på:
+
+4. Ctrl/Cmd + Shift + P
+5. _Open User Settings_
+6. Skriv inn `chat.agent.maxRequests`
+7. Endre til 100
+
+1. Åpne en ny chat i Visual Studio Code
+2. Velg modellen _GPT-6 Sol_ i chat vinduet
+3. Legg til innlogging-testbrukere.md i konteksten
+8. Be agenten om å implementere planen med subagenter:
+
+> implementer funksjonaliteten som er beskrevet. bruk subagenter for å implementere, gjerne med gpt-6 luna eller rimelige modeller. Sjekk arbeidet til subagenten, gi eventuelt tilbakemelding dersom det ikke er godt nok. Ikke avslutt før ende-til-ende testene kjører og verifiserer en vellykket innlogging.
 
 Neste steg er [08-veien-videre.md](08-veien-videre.md).
